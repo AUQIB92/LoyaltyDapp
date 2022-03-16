@@ -6,49 +6,58 @@
       <!-- 1 -->
       <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@0.18.2/dist/web3.min.js"></script>
       <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
-      
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     </head>
   
     <body>
-        <h1><b><center>Ethereum Loyalty DApp Demo</center></b></h1>
-        <table border="1">
+        <h1><b><i><center>Ethereum Loyalty DApp Demo</center></i></b></h1>
+        <table border="1" class="table table-dark table-striped">
           <tr>
-            <td><img src="/coffe.jpg"></td><td><img src="/coffe.jpg"></td><td><img src="/coffe.jpg"></td>
+            <td><img src="/coffe.jpg"></td><td><img src="/coffe.jpg"></td><td><img src="/coffe.jpg"></td><td><img src="/coffe.jpg"></td><td><img src="/coffe.jpg"></td><td><img src="/coffe.jpg"></td>
           </tr>
         </table>
         
-        <table border="1">
-          <tr>
+        <table border="2" class=" table table-info">
+          <tr class="table-info">
               <td> <h4>CGC-Cafe Loyalty Programe</h4> </td>
           </tr>
           <tr>
-            <td>One Coffee  Cup costs 2 units </td>
+            <td>One Coffee  Cup costs 2 CGC-Cafe Tokens </td>
           </tr>
           <tr>
-            <td>For every Coffee cup you will get 2 CGC-Cafe tokens as a Loyalty </td>
+            <td>For every Coffee cup you will get 2 CGC-Loyalty  points as a Loyalty </td>
           </tr>
           <tr>
             <td>With 10  CG-Cafe tokens you can buy one Coffee cup </td>
           </tr>
               
       </table>
-        <h4> No. of  Cups of Coffess</h4><input id="noItems" type="number"><button onclick='buy()'>Buy</button>
-        <table border="1" align="left">
+        <h4> No. of  Cups of Coffee</h4><input id="noItems" type="number"><button onclick='buy()' class="btn btn-danger">Buy</button>
+        <table border="1" align="left" class="table table-success table-striped">
             <tr>
-                <td>Balance of </td><td> <p id="rest"></p> </td><td><p id="balance"></p>Units</td>
+                <td>Balance of </td><td> <p id="rest"></p> </td><td><p id="balance"></p>CGC-Cafe Tokens</td>
             </tr>  
         </table>
         <br>
         <br>
         <br>
-        <h4>Enter the Balance to Add</h4><input id="amount" type="number"><button onclick='add()'>Add Balance</button>
-      
-        <table border="1" align="left">
+        <br>
+        <br>
+        <h4>Enter the Balance to Add</h4><input id="amount" type="number"><button onclick='add()' class="btn btn-success">Add Balance</button>
+      <br><br>
+        <table border="2" class="table table-success table-striped" align="left">
           <tr>
-              <td> <h3>CGC-Cafe Tokens  Earned so far</h3></td><td><p id="lpts"></p></td>
-          </tr>  
+              <td> <h6>CGC-Cafe Loyalty points ( 10 points------> 2 CGC-Cafe Tokens)</h6></td>
+           
+              <td><b><h4><p id="lpts"></h4></b></p></td>
+            </tr> 
+            
+             
+            
+            
+           
       </table> 
-      <button onclick='redeem()'>Redeem Tokens</button>
+      <button class="btn btn-primary" onclick='redeem()' >Redeem Loyalty Points </button>
     </body>
     <script>
       // 2)
@@ -180,7 +189,7 @@
         $('#balance').text(res.toString())
       })
       instance.showLppints(buyerAddress, function (err, res) {
-        $('#lpts').text(res.toString()+" "+ "tokens")
+        $('#lpts').text(res.toString()+" "+ "Loyalty Points")
       })
       function buy() {
           //console.log(instance)
@@ -202,15 +211,22 @@
       function redeem() {
         var totalPoints;
        instance.showLppints(buyerAddress, function (err, res) {
-        totalPoints= res;
-        })
+        if (!err)
+        totalPoints=res.toString();
+        console.log(parseInt(totalPoints))
+        if (totalPoints<5){
+        alert("Can't Redeem Points, Less than 5");
+        }
+        else {
           instance.lpointstoAmt(buyerAddress,{from: buyerAddress},function(err,res){
 
-          if (!err) { alert("Tokens  have been reedemed successfully")
-          alert(totalPoints%10 +" Loyalty points Remain")
-          window.location.reload()
+          if (!err) { alert("Loyalty  points  have been reedemed successfully")
+          alert(totalPoints%5 +" Loyalty points Remaining")
+          
         }
-          })
+        window.location.reload()
+          })}
+        })
          
       }
       function add()
