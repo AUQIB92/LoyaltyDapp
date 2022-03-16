@@ -1,0 +1,228 @@
+
+<html>
+    <head>
+      <title>Loyalty DApp</title>
+      <link href="/main.css" rel="stylesheet">
+      <!-- 1 -->
+      <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@0.18.2/dist/web3.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+      
+    </head>
+  
+    <body>
+        <h1><b><center>Ethereum Loyalty DApp Demo</center></b></h1>
+        <table border="1">
+          <tr>
+            <td><img src="/coffe.jpg"></td><td><img src="/coffe.jpg"></td><td><img src="/coffe.jpg"></td>
+          </tr>
+        </table>
+        
+        <table border="1">
+          <tr>
+              <td> <h4>CGC-Cafe Loyalty Programe</h4> </td>
+          </tr>
+          <tr>
+            <td>One Coffee  Cup costs 2 units </td>
+          </tr>
+          <tr>
+            <td>For every Coffee cup you will get 2 CGC-Cafe tokens as a Loyalty </td>
+          </tr>
+          <tr>
+            <td>With 10  CG-Cafe tokens you can buy one Coffee cup </td>
+          </tr>
+              
+      </table>
+        <h4> No. of  Cups of Coffess</h4><input id="noItems" type="number"><button onclick='buy()'>Buy</button>
+        <table border="1" align="left">
+            <tr>
+                <td>Balance of </td><td> <p id="rest"></p> </td><td><p id="balance"></p>Units</td>
+            </tr>  
+        </table>
+        <br>
+        <br>
+        <br>
+        <h4>Enter the Balance to Add</h4><input id="amount" type="number"><button onclick='add()'>Add Balance</button>
+      
+        <table border="1" align="left">
+          <tr>
+              <td> <h3>CGC-Cafe Tokens  Earned so far</h3></td><td><p id="lpts"></p></td>
+          </tr>  
+      </table> 
+      <button onclick='redeem()'>Redeem Tokens</button>
+    </body>
+    <script>
+      // 2)
+      var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+      // 3)
+      var abi = [
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "buy1",
+        "type": "address"
+      },
+      {
+        "name": "amt",
+        "type": "uint256"
+      },
+      {
+        "name": "no",
+        "type": "uint256"
+      }
+    ],
+    "name": "buy",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "buy1",
+        "type": "address"
+      }
+    ],
+    "name": "showLppints",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "buy1",
+        "type": "address"
+      },
+      {
+        "name": "amt",
+        "type": "uint256"
+      }
+    ],
+    "name": "addBalance",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "buy1",
+        "type": "address"
+      }
+    ],
+    "name": "lpointstoAmt",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "buy1",
+        "type": "address"
+      }
+    ],
+    "name": "getBalance",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
+      var Contract = web3.eth.contract(abi);
+      // 4)
+      var contractAddress = '0xFe5166C671cfEde06729177958B2D9a31Ff31Cd3'
+      var instance = Contract.at(contractAddress);
+      // address in your geth
+      var buyerAddress = web3.eth.accounts[0];
+      //$('#addresses').text("Hello")
+      document.getElementById("rest").innerHTML = buyerAddress+" ("+web3.eth.getBalance(buyerAddress)*1e-18+"ETH"+") ";
+      instance.getBalance(buyerAddress, function (err, res) {
+        $('#balance').text(res.toString())
+      })
+      instance.showLppints(buyerAddress, function (err, res) {
+        $('#lpts').text(res.toString()+" "+ "tokens")
+      })
+      function buy() {
+          //console.log(instance)
+          var items = document.getElementById("noItems").value 
+          var price = 2 * items
+        // 5) execute smart contract function updateShares
+        instance.buy(buyerAddress,price,items,{from: buyerAddress},function(err,res){
+            if(err || items<1){
+                alert(err+"Unsuccessful Transaction")
+            }
+            else{
+
+              alert(res +" "+ "Successfully Bought "+items+"Cups")
+            }
+            window.location.reload()
+        })
+      
+      }
+      function redeem() {
+        var totalPoints;
+       instance.showLppints(buyerAddress, function (err, res) {
+        totalPoints= res;
+        })
+          instance.lpointstoAmt(buyerAddress,{from: buyerAddress},function(err,res){
+
+          if (!err) { alert("Tokens  have been reedemed successfully")
+          alert(totalPoints%10 +" Loyalty points Remain")
+          window.location.reload()
+        }
+          })
+         
+      }
+      function add()
+      {
+      var amt= document.getElementById("amount").value 
+      instance.addBalance(buyerAddress,amt,{from: buyerAddress},function(err,res){
+        if (!err) { alert(res +"successfull")
+         window.location.reload()
+        }
+        
+      })
+  }
+    </script>
+  </html>
+  
